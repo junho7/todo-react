@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-function Task({ task, index, complete, remove }) {
+function Task({ task, onDragStart, onDragEnd, remove, complete }) {
   return (
     <div
       className='task'
       draggable
-      // style={{ textDecoration: task.completed ? "line-through" : "" }}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+
+      style={{ textDecoration: task.completed ? "line-through" : "" }}
     >
-      {task}
-      <button onClick={() => remove(index)}>x</button>
-      <button onClick={() => complete(index)}>Complete</button>
+      {task.title}
+      <button onClick={remove}>x</button>
+      <button onClick={complete}>Complete</button>
     </div>
   );
 }
@@ -37,27 +40,12 @@ function CreateTask({ add }) {
 }
 
 const Todo = () => {
-  // const [tasksRemaining, setTasksRemaining] = useState(0);
-  // const [tasks, setTasks] = useState([
-  //   {
-  //     title: "Grab some Pizza",
-  //     completed: true
-  //   },
-  //   {
-  //     title: "Do your workout",
-  //     completed: true
-  //   },
-  //   {
-  //     title: "Hangout with friends",
-  //     completed: false
-  //   }
-  // ]);
-  const [tasks, setTasks] = useState(['test1', 'test2', 'test3']);
+  const [tasksRemaining, setTasksRemaining] = useState(0);
+  const [tasks, setTasks] = useState([{title: 'test1', completed: false},{title: 'test2', completed: false}, {title: 'test3', completed: false}]);
   const [draggedItem, setDraggedItem] = useState();
   const [draggedOverItemIndex, setDraggedOverItemIndex] = useState();
 
-  // useEffect(() => { setTasksRemaining(tasks.filter(task => !task.completed).length) }, [tasks]);
-
+  useEffect(() => { setTasksRemaining(tasks.filter(task => !task.completed).length) }, [tasks]);
 
   const add = title => {
     const newTasks = [...tasks, { title, completed: false }];
@@ -66,6 +54,10 @@ const Todo = () => {
 
   const complete = index => {
     const newTasks = [...tasks];
+    console.log('newTasks: ', newTasks)
+    console.log('indxe: ', index)
+    console.log('adsf', newTasks[index])
+    console.log('adsf', newTasks[index].completed)
     newTasks[index].completed = !newTasks[index].completed;
     setTasks(newTasks);
   };
@@ -109,22 +101,24 @@ const Todo = () => {
 
   return (
     <div className="todo-container">
-      {/* <div className="header">Pending tasks ({tasksRemaining})</div> */}
+      <div className="header">Pending tasks ({tasksRemaining})</div>
       <div className="tasks">
         <ul 
           onDragOver={(e)=>e.preventDefault}
-          style={{'list-style-type': 'none'}}
+          style={{'listStyleType': 'none'}}
         >
         {tasks.map((task, index) => (
           <li 
             key={index}
             onDragOver={(e) => onDragOver(e, index)}
             >
-               <div
-                  draggable
+               <Task
+                  task={task}
                   onDragStart={(e) => onDragStart(e, index)}
                   onDragEnd={e=>onDragEnd(e, index)}
-                >{task}</div>
+                  remove={()=>remove(index)}
+                  complete={()=>complete(index)}
+                />
           </li>
         ))}
         </ul>
