@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button, ListGroup } from 'react-bootstrap';
 
 function Task({ task, onDragStart, onDragEnd, remove, complete }) {
   return (
@@ -11,8 +12,8 @@ function Task({ task, onDragStart, onDragEnd, remove, complete }) {
       style={{ textDecoration: task.completed ? "line-through" : "" }}
     >
       {task.title}
-      <button onClick={remove}>x</button>
-      <button onClick={complete}>Complete</button>
+      <Button variant="primary" onClick={remove}>x</Button>
+      <Button onClick={complete}>Complete</Button>
     </div>
   );
 }
@@ -103,12 +104,12 @@ const Todo = () => {
     <div className="todo-container">
       <div className="header">Pending tasks ({tasksRemaining})</div>
       <div className="tasks">
-        <ul 
+        <ListGroup 
           onDragOver={(e)=>e.preventDefault}
           style={{'listStyleType': 'none'}}
         >
         {tasks.map((task, index) => (
-          <li 
+          <ListGroup.Item 
             key={index}
             onDragOver={(e) => onDragOver(e, index)}
             >
@@ -119,9 +120,9 @@ const Todo = () => {
                   remove={()=>remove(index)}
                   complete={()=>complete(index)}
                 />
-          </li>
+          </ListGroup.Item>
         ))}
-        </ul>
+        </ListGroup>
       </div>
       <div className="create-task" >
         <CreateTask add={add} />
