@@ -44,7 +44,6 @@ const Todo = () => {
   const [tasksRemaining, setTasksRemaining] = useState(0);
   const [tasks, setTasks] = useState([{title: 'test1', completed: false},{title: 'test2', completed: false}, {title: 'test3', completed: false}]);
   const [draggedItem, setDraggedItem] = useState();
-  const [draggedOverItemIndex, setDraggedOverItemIndex] = useState();
 
   useEffect(() => { setTasksRemaining(tasks.filter(task => !task.completed).length) }, [tasks]);
 
@@ -55,10 +54,6 @@ const Todo = () => {
 
   const complete = index => {
     const newTasks = [...tasks];
-    console.log('newTasks: ', newTasks)
-    console.log('indxe: ', index)
-    console.log('adsf', newTasks[index])
-    console.log('adsf', newTasks[index].completed)
     newTasks[index].completed = !newTasks[index].completed;
     setTasks(newTasks);
   };
@@ -70,33 +65,25 @@ const Todo = () => {
   };
 
   const onDragStart = (e, index) => {
-    console.log('DragStart: ', index)
     setDraggedItem(tasks[index]);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/html", e.target.parentNode);
     e.dataTransfer.setDragImage(e.target.parentNode, 20, 20);
-    console.log('draggedItem: ', draggedItem)
   };
 
   const onDragOver = (e, index) => {
     e.preventDefault();
     const draggedOverItem = tasks[index];
-    console.log('draggedOverItem: ', draggedOverItem)
-    console.log('draggedItem: ', draggedItem)
     if (!draggedItem || (draggedItem === draggedOverItem)) {
       return;
     }
-    setDraggedOverItemIndex(index);
-    console.log('draggedOverItemIndex: ', draggedOverItemIndex)
     let items = tasks.filter((item) => item !== draggedItem);
     items.splice(index, 0, draggedItem);
 
     setTasks(items);
-    console.log(items)
   };
 
   const onDragEnd = (e, index) => {
-    console.log('onDragEnd: ', draggedOverItemIndex)
     setDraggedItem(null);
   };
 
@@ -107,6 +94,7 @@ const Todo = () => {
         <ListGroup 
           onDragOver={(e)=>e.preventDefault}
           style={{'listStyleType': 'none'}}
+          className='shadow-sm'
         >
         {tasks.map((task, index) => (
           <ListGroup.Item 
