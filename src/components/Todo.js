@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ListGroup } from 'react-bootstrap';
+import { Button, ListGroup, Container } from 'react-bootstrap';
 
 function Task({ task, onDragStart, onDragEnd, remove, complete }) {
   return (
@@ -101,9 +101,9 @@ const Todo = () => {
   };
 
   return (
-    <div className="todo-container">
-      <div className="header">Pending tasks ({tasksRemaining})</div>
-      <div className="tasks">
+    <Container className="vh-100 row">
+      <div className="header align-self-end">Pending tasks ({tasksRemaining})</div>
+      <div className="tasks align-self-center">
         <ListGroup 
           onDragOver={(e)=>e.preventDefault}
           style={{'listStyleType': 'none'}}
@@ -124,10 +124,10 @@ const Todo = () => {
         ))}
         </ListGroup>
       </div>
-      <div className="create-task" >
+      <div className="create-task align-self-start" >
         <CreateTask add={add} />
       </div>
-    </div>
+    </Container>
   );
 }
 
