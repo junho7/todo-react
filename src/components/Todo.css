@@ -1,0 +1,7 @@
+.title {
+  flex: 80;
+  min-height: 32px;
+}
+.button {
+  flex: 20;
+}

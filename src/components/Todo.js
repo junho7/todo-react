@@ -1,19 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ListGroup, Container } from 'react-bootstrap';
+import { Button, ListGroup, Container, ButtonGroup } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
+
+import './Todo.css';
 
 function Task({ task, onDragStart, onDragEnd, remove, complete }) {
+  const [buttonShow, setButtonShow] = useState(false);
   return (
     <div
-      className='task'
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-
-      style={{ textDecoration: task.completed ? "line-through" : "" }}
-    >
+      className='row p-0'
+      onMouseEnter={(e) => setButtonShow(true)}
+      onMouseLeave={(e) => setButtonShow(false)}
+      >
+      <div
+        className='title'
+        draggable
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        style={{ textDecoration: task.completed ? "line-through" : "" }}
+      >
       {task.title}
-      <Button variant="primary" onClick={remove}>x</Button>
-      <Button onClick={complete}>Complete</Button>
+      </div>
+      <div className='button p-0'>
+      {buttonShow?
+      <ButtonGroup className='float-right'>
+        <Button variant="outline-primary" size='sm' onClick={complete}>
+          <FontAwesomeIcon icon={faCheck} />
+        </Button>
+        <Button variant="outline-primary" size='sm' onClick={remove}>
+          <FontAwesomeIcon icon={faTrash} />
+        </Button>
+      </ButtonGroup>
+      : ''
+      }
+      </div>
     </div>
   );
 }
@@ -44,7 +65,7 @@ const Todo = () => {
   const [tasksRemaining, setTasksRemaining] = useState(0);
   const [tasks, setTasks] = useState([{title: 'test1', completed: false},{title: 'test2', completed: false}, {title: 'test3', completed: false}]);
   const [draggedItem, setDraggedItem] = useState();
-
+  
   useEffect(() => { setTasksRemaining(tasks.filter(task => !task.completed).length) }, [tasks]);
 
   const add = title => {
@@ -88,7 +109,7 @@ const Todo = () => {
   };
 
   return (
-    <Container className="vh-100 row">
+    <Container className="vh-100 row mx-auto">
       <div className="header align-self-end">Pending tasks ({tasksRemaining})</div>
       <div className="tasks align-self-center">
         <ListGroup 
