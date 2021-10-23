@@ -1,27 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { Button, ListGroup, Container, ButtonGroup } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, ListGroup, Container, ButtonGroup, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
+import useKeyPress from './useKeyPress';
+import useOnClickOutside from './useOnClickOutside';
 
 import './Todo.css';
 
-function Task({ task, onDragStart, onDragEnd, remove, complete }) {
+function Task({ task, index, onDragStart, onDragEnd, remove, complete, onEditEnd }) {
   const [buttonShow, setButtonShow] = useState(false);
+  const [isInputActive, setIsInputActive] = useState(false);
+  const [inputValue, setInputValue] = useState(task.title)
+
+  const inputRef = useRef(null);
+  const wrapperRef = useRef(null)
+  const enter = useKeyPress('Enter');
+  const esc = useKeyPress('Escape');
+
+  useOnClickOutside(wrapperRef, () => setIsInputActive(false));
+  useEffect(() => {
+    console.log('Task: ', task)
+    if (isInputActive) {
+      inputRef.current.focus();
+      if (enter) {
+        onEditEnd(index, inputValue);
+        setIsInputActive(false);
+      }
+      if (esc) {
+        setIsInputActive(false);
+      }
+    }
+    else {
+      setInputValue(task.title);
+    }
+  }, [isInputActive, enter, esc, task, index, inputValue, onEditEnd]);
+
   return (
     <div
       className='row p-0'
       onMouseEnter={(e) => setButtonShow(true)}
       onMouseLeave={(e) => setButtonShow(false)}
       >
-      <div
+      <div 
         className='title'
+        ref={wrapperRef}
+        onClick={() => setIsInputActive(true)}
         draggable
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
-        style={{ textDecoration: task.completed ? "line-through" : "" }}
-      >
-      {task.title}
-      </div>
+          style={{ textDecoration: task.completed ? "line-through" : "", border: 0 }}
+        >
+      { isInputActive ?
+      <Form.Control
+      ref={inputRef}
+      as='input'
+      value={inputValue}
+      onChange={e=>{setInputValue(e.target.value)}}
+      />
+      : inputValue
+        }
+        </div>
       <div className='button p-0'>
       {buttonShow?
       <ButtonGroup className='float-right'>
@@ -66,7 +104,10 @@ const Todo = () => {
   const [tasks, setTasks] = useState([{title: 'test1', completed: false},{title: 'test2', completed: false}, {title: 'test3', completed: false}]);
   const [draggedItem, setDraggedItem] = useState();
   
-  useEffect(() => { setTasksRemaining(tasks.filter(task => !task.completed).length) }, [tasks]);
+  useEffect(() => { 
+    setTasksRemaining(tasks.filter(task => !task.completed).length) 
+    console.log('Todo tasks: ', tasks)
+  }, [tasks, setTasks]);
 
   const add = title => {
     const newTasks = [...tasks, { title, completed: false }];
@@ -108,6 +149,15 @@ const Todo = () => {
     setDraggedItem(null);
   };
 
+  const onEditEnd = (index, newTask) => {
+    console.log('onEditEnd: ', index, ' ', newTask)
+    let items = tasks;
+    items[index].title = newTask;
+
+    setTasks(items);
+    console.log('onEditEnd Tasks:', tasks)
+  };
+
   return (
     <Container className="vh-100 row mx-auto">
       <div className="header align-self-end">Pending tasks ({tasksRemaining})</div>
@@ -124,10 +174,12 @@ const Todo = () => {
             >
                <Task
                   task={task}
+                  index={index}
                   onDragStart={(e) => onDragStart(e, index)}
                   onDragEnd={e=>onDragEnd(e, index)}
                   remove={()=>remove(index)}
                   complete={()=>complete(index)}
+                  onEditEnd={(index, newTask)=>onEditEnd(index, newTask)}
                 />
           </ListGroup.Item>
         ))}
