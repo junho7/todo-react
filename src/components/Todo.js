@@ -111,7 +111,9 @@ const Todo = () => {
   }, [tasks, setTasks]);
 
   const add = title => {
-    const newTasks = [...tasks, { title, completed: false }];
+    // const newTasks = [...tasks, { title, completed: false }];
+    const newTasks = [...tasks];
+    newTasks.splice(tasksRemaining, 0, { title, complete: false });
     setTasks(newTasks);
   };
 
