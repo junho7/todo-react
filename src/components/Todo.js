@@ -76,21 +76,22 @@ function Task({ task, index, onDragStart, onDragEnd, remove, complete, onEditEnd
     </div>
   );
 }
-
 function CreateTask({ add }) {
   const [value, setValue] = useState();
+  console.log('value: ', value)
 
   const submit = e => {
     e.preventDefault();
     if (!value) return;
     add(value);
-    setValue();
+    setValue('');
   }
 
   return (
     <form onSubmit={submit}>
       <input
         type="text"
+        className='form-control border border-primary mb-3'
         value={value}
         placeholder="Add a new task"
         onChange={e => setValue(e.target.value)}
@@ -160,8 +161,11 @@ const Todo = () => {
 
   return (
     <Container className="vh-100 row mx-auto">
-      <div className="header align-self-end">Pending tasks ({tasksRemaining})</div>
+      <div className="header align-self-end">
+      </div>
       <div className="tasks align-self-center">
+        Pending tasks ({tasksRemaining})
+        <CreateTask add={add} />
         <ListGroup 
           onDragOver={(e)=>e.preventDefault}
           style={{'listStyleType': 'none'}}
@@ -186,7 +190,6 @@ const Todo = () => {
         </ListGroup>
       </div>
       <div className="create-task align-self-start" >
-        <CreateTask add={add} />
       </div>
     </Container>
   );
