@@ -19,6 +19,7 @@ export default function useKeyPress(targetKey) {
       window.removeEventListener("keydown", enterDownHandler);
       window.removeEventListener("keyup", enterUpHandler);
     };
+// eslint-disable-next-line    
   }, []); 
   return keyPressed;
 }

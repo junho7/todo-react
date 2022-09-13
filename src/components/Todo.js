@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, ListGroup, Container, ButtonGroup, Form } from 'react-bootstrap';
+import { Button, ListGroup, Container, ButtonGroup, Form, ProgressBar } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import useKeyPress from './useKeyPress';
@@ -19,7 +19,6 @@ function Task({ task, index, onDragStart, onDragEnd, remove, complete, onEditEnd
 
   useOnClickOutside(wrapperRef, () => setIsInputActive(false));
   useEffect(() => {
-    console.log('Task: ', task)
     if (isInputActive) {
       inputRef.current.focus();
       if (enter) {
@@ -50,6 +49,7 @@ function Task({ task, index, onDragStart, onDragEnd, remove, complete, onEditEnd
         onDragEnd={onDragEnd}
           style={{ textDecoration: task.completed ? "line-through" : "", border: 0 }}
         >
+
       { isInputActive ?
       <Form.Control
       ref={inputRef}
@@ -78,7 +78,6 @@ function Task({ task, index, onDragStart, onDragEnd, remove, complete, onEditEnd
 }
 function CreateTask({ add }) {
   const [value, setValue] = useState();
-  console.log('value: ', value)
 
   const submit = e => {
     e.preventDefault();
@@ -102,12 +101,13 @@ function CreateTask({ add }) {
 
 const Todo = () => {
   const [tasksRemaining, setTasksRemaining] = useState(0);
-  const [tasks, setTasks] = useState([{title: 'test1', completed: false},{title: 'test2', completed: false}, {title: 'test3', completed: false}]);
+  const [tasks, setTasks] = useState([{title: 'Eat', completed: false},{title: 'Pray', completed: false}, {title: 'Love', completed: false}]);
   const [draggedItem, setDraggedItem] = useState();
+
+  const progress = Math.round((tasks.length-tasksRemaining)/tasks.length * 100, 0)
   
   useEffect(() => { 
     setTasksRemaining(tasks.filter(task => !task.completed).length) 
-    console.log('Todo tasks: ', tasks)
   }, [tasks, setTasks]);
 
   const add = title => {
@@ -152,12 +152,10 @@ const Todo = () => {
   };
 
   const onEditEnd = (index, newTask) => {
-    console.log('onEditEnd: ', index, ' ', newTask)
     let items = tasks;
     items[index].title = newTask;
 
     setTasks(items);
-    console.log('onEditEnd Tasks:', tasks)
   };
 
   return (
@@ -165,8 +163,9 @@ const Todo = () => {
       <div className="header align-self-end">
       </div>
       <div className="tasks align-self-center">
-        Pending tasks ({tasksRemaining})
         <CreateTask add={add} />
+        <ProgressBar now={progress} label={`${progress}%`} 
+          className="mb-3"/>
         <ListGroup 
           onDragOver={(e)=>e.preventDefault}
           style={{'listStyleType': 'none'}}
